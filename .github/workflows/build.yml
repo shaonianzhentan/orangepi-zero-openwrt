@@ -33,7 +33,7 @@ jobs:
           make -j$(nproc) V=s
 
       - name: Upload firmware
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.OPENWRT_IMAGE_NAME }}
           path: bin/targets/${{ env.OPENWRT_TARGET }}/*.img

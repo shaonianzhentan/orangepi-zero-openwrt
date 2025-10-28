@@ -1,0 +1,39 @@
+name: Build Orange Pi Zero Firmware
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
+      OPENWRT_TARGET: sunxi/cortexa7
+      OPENWRT_IMAGE_NAME: openwrt-orangepi-zero
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential libncurses5-dev gawk git gettext libssl-dev xsltproc unzip wget python3 python3-distutils
+
+      - name: Update and install feeds
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Compile firmware
+        run: |
+          make defconfig
+          make -j$(nproc) V=s
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.OPENWRT_IMAGE_NAME }}
+          path: bin/targets/${{ env.OPENWRT_TARGET }}/*.img

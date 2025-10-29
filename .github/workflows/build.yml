@@ -58,7 +58,22 @@ jobs:
           ./scripts/feeds install -a
 
       - name: Generate configuration file
-        run: make oldconfig
+        run: |
+          # 原有设备配置
+          echo "CONFIG_TARGET_sunxi=y" >> .config
+          echo "CONFIG_TARGET_sunxi_armv7=y" >> .config
+          echo "CONFIG_TARGET_sunxi_armv7_DEVICE_orangepi_zero=y" >> .config
+          # 启用 LuCI 基础界面
+          echo "CONFIG_PACKAGE_luci=y" >> .config
+          # 添加 OpenClash 及依赖
+          echo "CONFIG_PACKAGE_luci-app-openclash=y" >> .config  # OpenClash 主程序
+          echo "CONFIG_PACKAGE_luci-i18n-openclash-zh-cn=y" >> .config  # 中文语言包
+          echo "CONFIG_PACKAGE_coreutils=y" >> .config  # 基础工具依赖
+          echo "CONFIG_PACKAGE_coreutils-nohup=y" >> .config
+          echo "CONFIG_PACKAGE_bash=y" >> .config
+          echo "CONFIG_PACKAGE_wget=y" >> .config
+          # 生成完整配置
+          make defconfig
 
       - name: 显示配置文件
         run: cat .config

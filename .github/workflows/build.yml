@@ -58,7 +58,7 @@ jobs:
 
       - name: 显示配置文件
         run: |
-          ls
+          la
           cat .config
 
       - name: Download packages
